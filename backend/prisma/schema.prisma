@@ -11,7 +11,10 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String
-  testSlot  DateTime?
+  testSlot  DateTime? 
+  testApplied Boolean  @default(false)
+  testGiven Boolean  @default(false)
+  marks     Int?
   createdAt DateTime @default(now())
   testId    String?
   test      Test?    @relation(fields: [testId], references: [id])
@@ -61,6 +64,7 @@ model Test {
   totalMarks       Int
   noOfMcqs         Int @default(0)
   noOfCodingQues   Int  @default(0)
+  usersFilled     Int @default(0)
   usersEnrolled    User[] 
   mcqs             Mcq[]
   codingQuestions  CodingQuestion[]
