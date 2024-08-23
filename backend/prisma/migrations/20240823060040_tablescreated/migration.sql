@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Test" ALTER COLUMN "noOfMcqs" SET DEFAULT 0,
+ALTER COLUMN "noOfCodingQues" SET DEFAULT 0;
