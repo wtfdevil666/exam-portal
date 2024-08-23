@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export const createTest = async (req: Request, res: Response) => {
   try {
-    const { name, timeSlot, usersAllowed, totalMarks} = req.body;
+    const { name, timeSlot, usersAllowed, totalMarks, endTime} = req.body;
 
     if (!name || !timeSlot || !usersAllowed || !totalMarks) {
       return res.status(400).json({ message: 'Missing required fields.' });
@@ -14,7 +14,8 @@ export const createTest = async (req: Request, res: Response) => {
     const test = await prisma.test.create({
       data: {
         name,
-        timeSlot: new Date(timeSlot), 
+        timeSlot: new Date(timeSlot),
+        endTime: new Date(endTime), 
         usersAllowed,
         totalMarks
       }
