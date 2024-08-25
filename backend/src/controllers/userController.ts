@@ -80,3 +80,21 @@ export const applyTest = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error applying test' });
     }
 }
+export const signup = async (req: Request, res: Response) => {
+    const { name, rollNo, branch, phone } = req.body;
+    //@ts-ignore
+    const email = req.user?.email;
+
+    try {
+        const user = await prisma.user.upsert({
+            where: { email },
+            update: { name, rollNo, branch, phone,signUp: true },
+            create: { email, name, rollNo, branch, phone,signUp: true },
+        });
+
+        return res.json({ message: 'User created or updated successfully', user });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Error creating or updating user' });
+    }
+};

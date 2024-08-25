@@ -1,7 +1,10 @@
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
 import Landing from './pages/Landing';
-import GoogleSignInButton from './pages/Signin';
-import Login from './pages/Login';
+import GoogleSignInButton from './pages/auth/Signin';
+import Login from './pages/auth/Login';
+import Dashboard from './pages/Dashboard';
+import SignupForm from './pages/auth/Signup';
+import AdminLogin from './pages/admin/AdminLogin';
 
 
 export default function App() {
@@ -11,6 +14,10 @@ export default function App() {
         <Route path="/" element={< Landing/>} />
         <Route path="/signin" element={< GoogleSignInButton/>} />
         <Route path="/login" element={< Login/>} />
+        <Route path="/signup" element={< SignupForm/>} />
+        <Route path="/dashboard" element={< Dashboard/>} />
+        <Route path="/admin/login" element={< AdminLogin/>} />
+        <Route path="/admin/dashboard" element={<div> admin dash </div>} />
       </Routes>  
     </BrowserRouter>
   );

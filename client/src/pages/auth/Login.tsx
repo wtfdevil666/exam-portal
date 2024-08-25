@@ -8,7 +8,8 @@ const Login = () => {
         const f = async () => {
             try {
                 const response = await axios.get('http://localhost:3000/api/user/login/success', { withCredentials: true });
-                if(response.data.signUp==false){
+                console.log(response.data.user.signUp)
+                if(response.data.user.signUp==false){
                     navigate('/signup')
                 }
                 else{
