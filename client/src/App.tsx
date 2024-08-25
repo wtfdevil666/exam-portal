@@ -5,6 +5,7 @@ import Login from './pages/auth/Login';
 import Dashboard from './pages/Dashboard';
 import SignupForm from './pages/auth/Signup';
 import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 
 export default function App() {
@@ -17,7 +18,7 @@ export default function App() {
         <Route path="/signup" element={< SignupForm/>} />
         <Route path="/dashboard" element={< Dashboard/>} />
         <Route path="/admin/login" element={< AdminLogin/>} />
-        <Route path="/admin/dashboard" element={<div> admin dash </div>} />
+        <Route path="/admin/dashboard" element={<AdminDashboard/>} />
       </Routes>  
     </BrowserRouter>
   );

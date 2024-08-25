@@ -11,7 +11,7 @@ const RATE_LIMIT_TIME = 15;
 const OTP_EXPIRY_TIME = 5;
 
 const JWT_SECRET = process.env.JWT_SECRET!;
-const JWT_EXPIRY = '1h'; 
+const JWT_EXPIRY = '23h'; 
 
 export const adminLogin = async (req: Request, res: Response) => {
   const { email, otp } = req.body;

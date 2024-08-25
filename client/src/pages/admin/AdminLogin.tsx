@@ -20,7 +20,7 @@ const AdminLogin: React.FC = () => {
             }
         });
         if(res.status === 200) {
-            navigate('/admindashboard');
+            navigate('/admin/dashboard');
         }
     }
     f();
@@ -50,7 +50,7 @@ const AdminLogin: React.FC = () => {
       const response = await axios.post('http://localhost:3000/api/admin/getotp', { email, otp });
       if(response.status === 200) {
         localStorage.setItem('token', response.data.token);
-        navigate('/admindashboard');
+        navigate('/admin/dashboard');
       }
       
     } catch (err: any) {
@@ -61,7 +61,7 @@ const AdminLogin: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-black">
       <div className="w-full max-w-md p-8 bg-white shadow-lg rounded-lg">
         <h2 className="text-2xl font-bold text-center mb-6">
           Admin {step === 'email' ? 'Login' : 'OTP Verification'}

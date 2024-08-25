@@ -80,7 +80,8 @@ export const updateTest = async (req: Request, res: Response) => {
 
 export const addMcq = async (req: Request, res: Response) => {
     try {
-        const { testId, question, option1,option2,option3,option4, answer, marks } = req.body;
+        const testId = req.params.testId;
+        const {  question, option1,option2,option3,option4, answer, marks } = req.body;
 
         const mcq = await prisma.mcq.create({
             data: {
@@ -119,10 +120,10 @@ export const getMcqs = async (req: Request, res: Response) => {
 
 export const deleteMcq = async (req: Request, res: Response) => {
     try {
-        const id = req.params.id;
+        const mcqId = req.params.mcqId;
         const mcq = await prisma.mcq.delete({
             where: {
-                id: id as string
+                id: mcqId as string
             }
         });
         res.status(200).json({ message: 'MCQ deleted successfully', mcq });
@@ -161,7 +162,8 @@ export const updateMcq = async (req: Request, res: Response) => {
 
 export const addCodingQuestion = async (req: Request, res: Response) => {
     try {
-        const { testId, difficulty, marks, title, description, sampleTestCase, sampleTestCaseOutput, testCases, testCasesOutput, } = req.body;
+        const testId = req.params.testId;
+        const { difficulty, marks, title, description, sampleTestCase, sampleTestCaseOutput, testCases, testCasesOutput, } = req.body;
 
         const coding = await prisma.codingQuestion.create({
             data: {
@@ -202,9 +204,10 @@ export const getCodingQuestions = async (req: Request, res: Response) => {
 
 export const deleteCodingQuestion = async (req: Request, res: Response) => {
     try {
+        const {codingQuestionId} = req.params;
         const coding = await prisma.codingQuestion.delete({
             where: {
-                id: req.params.id as string
+                id: codingQuestionId as string
             }
         });
         res.status(200).json({ message: 'Coding question deleted successfully', coding });
@@ -216,12 +219,12 @@ export const deleteCodingQuestion = async (req: Request, res: Response) => {
 
 export const updateCodingQuestion = async (req: Request, res: Response) => {
     try {
-        const id = req.params.id;
+        const {codingQuestionId} = req.params;
         const { title, marks, description, sampleTestCase, sampleTestCaseOutput, testCases, testCasesOutput, difficulty } = req.body;
 
         const coding = await prisma.codingQuestion.update({
             where: {
-                id: id as string
+                id: codingQuestionId as string
             },
             data: {
                 title,

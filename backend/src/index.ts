@@ -86,7 +86,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/admin', adminRouter);
 app.use('/api/user', userRouter);
-// app.use('/api/auth', authRouter);
 
 /*=================================================================*/ 
 
