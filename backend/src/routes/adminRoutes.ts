@@ -1,7 +1,7 @@
 import express from "express";
 import { adminLogin, isAdminLogined } from "../controllers/adminAuth";
 import { verifyJWT } from "../middlewares/verifyJWT";
-import { addCodingQuestion, addMcq, createTest, deleteTest, getTests, updateMcq, updateTest } from "../controllers/adminController";
+import { addCodingQuestion, addMcq, createTest, deleteTest, getMcqs, getTests, updateMcq, updateTest } from "../controllers/adminController";
 
 const router = express.Router();
 
@@ -12,7 +12,7 @@ router.post("/createTest", verifyJWT, createTest);
 router.delete("/deleteTest/:id", verifyJWT, deleteTest);
 router.put("/updateTest/:id", verifyJWT, updateTest);
 router.post("/test/:testId/addmcq", verifyJWT, addMcq);
-router.get("/test/:testId/mcqs", verifyJWT, addMcq);
+router.get("/test/:testId/mcqs", verifyJWT, getMcqs);
 router.delete("/test/:testId/mcq/:mcqId", verifyJWT, addMcq);
 router.put("/test/:testId/mcq/:mcqId", verifyJWT, updateMcq);
 router.post("/test/:testId/addcodingquestion", verifyJWT, addCodingQuestion);

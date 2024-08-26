@@ -6,6 +6,8 @@ import Dashboard from './pages/Dashboard';
 import SignupForm from './pages/auth/Signup';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import Addmcqs from './pages/admin/Addmcqs';
+import Addcodingquestions from './pages/admin/Addcodingquestions';
 
 
 export default function App() {
@@ -19,6 +21,9 @@ export default function App() {
         <Route path="/dashboard" element={< Dashboard/>} />
         <Route path="/admin/login" element={< AdminLogin/>} />
         <Route path="/admin/dashboard" element={<AdminDashboard/>} />
+        <Route path="/admin/test/:testid/addmcqs" element={<Addmcqs/>} />
+        <Route path="/admin/test/:testid/addcodingquestions" element={<Addcodingquestions/>} />
+        
       </Routes>  
     </BrowserRouter>
   );

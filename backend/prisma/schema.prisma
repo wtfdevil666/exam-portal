@@ -14,6 +14,7 @@ model User {
   rollNo    String?
   branch    String?
   phone    String?
+  imageurl String?
   signUp    Boolean  @default(false)
   testSlot  DateTime? 
   testApplied Boolean  @default(false)

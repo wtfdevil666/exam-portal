@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 axios.interceptors.request.use(
   (config) => {
@@ -36,6 +37,8 @@ const AdminDashboard = () => {
     totalMarks: 0,
   });
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchTests = async () => {
       setLoading(true);
@@ -51,10 +54,26 @@ const AdminDashboard = () => {
     fetchTests();
   }, []);
 
-  // Handle delete test
+  
+  const addMcqs = async (id: string) => {
+    try {
+      navigate(`/admin/test/${id}/addmcqs`);
+    } catch (error) {
+      console.error("Error fetching mcqs:", error);
+    }
+  }
+
+  const addCodingQuestions = async (id: string) => {
+    try {
+      navigate(`/admin/test/${id}/addcodingquestions`);
+    } catch (error) {
+      console.error("Error fetching coding questions:", error);
+    }
+  }
+
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:3000/api/admin/tests/${id}`);
+      await axios.delete(`http://localhost:3000/api/admin/deleteTest/${id}`);
       setTests(tests.filter((test) => test.id !== id));
     } catch (error) {
       console.error("Error deleting test:", error);
@@ -65,7 +84,7 @@ const AdminDashboard = () => {
     try {
       const res = await axios.post("http://localhost:3000/api/admin/createTest", newTest);
       setTests([...tests, res.data]);
-      setShowForm(false); // Hide the form after submission
+      setShowForm(false); 
     } catch (error) {
       console.error("Error adding test:", error);
     }
@@ -83,17 +102,26 @@ const AdminDashboard = () => {
             tests.map((test) => (
                 <div key={test.id} className="p-6 bg-gray-800 rounded-md">
                 <h2 className="text-xl font-bold mb-2">{test.name}</h2>
+                <p>Test id: {test.id}</p>
                 <p>Time Slot: {new Date(test.timeSlot).toLocaleString()}</p>
                 <p>End Time: {new Date(test.endTime).toLocaleString()}</p>
                 <p>Users Allowed: {test.usersAllowed}</p>
                 <p>Users Filled: {test.usersFilled}</p>
                 <p>Total Marks: {test.totalMarks}</p>
+                <div className="flex gap-3">
                 <button
                   className="bg-red-500 text-white px-4 py-2 mt-4 rounded"
                   onClick={() => handleDelete(test.id)}
-                >
+                  >
                   Delete Test
                 </button>
+                <button className="bg-blue-500 text-white px-4 py-2 mt-4 rounded" onClick={() => addMcqs(test.id)}>
+                  Add mcqs
+                </button>
+                <button className="bg-blue-500 text-white px-4 py-2 mt-4 rounded" onClick={()=> addCodingQuestions(test.id)}>
+                  Add coding questions
+                </button>
+                  </div>
               </div>
             ))
           ) : (
@@ -111,7 +139,7 @@ const AdminDashboard = () => {
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-gray-800 p-6 rounded-md text-white">
+          <div className="bg-gray-800 p-6 rounded-md text-white w-96">
             <h2 className="text-2xl font-bold mb-4">Add New Test</h2>
             <div className="mb-4">
               <label className="block text-sm">Name:</label>
