@@ -10,10 +10,10 @@ const Login = () => {
                 const response = await axios.get('http://localhost:3000/api/user/login/success', { withCredentials: true });
                 console.log(response.data.user.signUp)
                 if(response.data.user.signUp==false){
-                    navigate('/signup')
+                    navigate('/signup');
                 }
                 else{
-                    navigate('/dashboard')
+                    navigate('/user/gettests');
                 } 
             } catch (error) {
                 console.log(error)
@@ -23,8 +23,8 @@ const Login = () => {
     },[])
 
   return (
-    <div>
-      Login
+    <div className='text-black'>
+      Redirecting you...
     </div>
   )
 }

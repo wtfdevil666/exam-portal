@@ -93,6 +93,12 @@ const AdminDashboard = () => {
   return (
     <div className="bg-black text-white min-h-screen p-8">
       <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+      <button
+        className="bg-green-500 text-white px-4 py-2 mb-2 rounded"
+        onClick={() => setShowForm(true)}
+      >
+        Add New Test
+      </button>
 
       {loading ? (
         <p>Loading...</p>
@@ -130,12 +136,7 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      <button
-        className="bg-green-500 text-white px-4 py-2 mt-8 rounded"
-        onClick={() => setShowForm(true)}
-      >
-        Add New Test
-      </button>
+      
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">

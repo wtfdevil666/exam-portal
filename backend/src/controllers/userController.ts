@@ -34,8 +34,10 @@ export const getTests = async (req: Request, res: Response) => {
 }
 
 export const applyTest = async (req: Request, res: Response) => {
-    const { testId, email } = req.body;
-
+    const { testId } = req.params;
+    console.log(req.user);
+    //@ts-ignore
+    const email = req.user!.email;
     try {
         const user = await prisma.user.findUnique({
             where: {
@@ -77,6 +79,7 @@ export const applyTest = async (req: Request, res: Response) => {
                     data: {
                         testId,
                         testSlot: test.timeSlot,
+                        testApplied: true,
                     },
                 });
 
