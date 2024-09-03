@@ -1,7 +1,7 @@
+import { firebaseConfig } from '../config/firebaseconfig';
 import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
 import { initializeApp } from "firebase/app";
-import { firebaseConfig } from '../config/firebaseconfig';
 import { getStorage, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import multer from 'multer';
 
@@ -96,9 +96,11 @@ export const applyTest = async (req: Request, res: Response) => {
 
 
 export const signup = async (req: Request, res: Response) => {
-    const { name, rollNo, branch, phone } = req.body;
+    
+    const { name, rollNo, branch, phone } = req.body.formData;
+    console.log(req.body);
     //@ts-ignore
-    const email = req.user?.email;
+    const email = req.user.email;
 
     if (!email) {
         return res.status(400).json({ message: 'User email is required' });
@@ -144,3 +146,27 @@ export const signup = async (req: Request, res: Response) => {
         return res.status(500).json({ message: 'Error creating or updating user' });
     }
 };
+
+export const Login = async (req:Request, res:Response) => {
+
+    //@ts-ignore
+    const email = req.user.email;
+
+    const user = await prisma.user.findUnique({
+        where:{
+            email
+        }
+    })
+
+    if(user?.signUp===true){
+        return res.status(200).json({
+            "success":true
+        })
+    }
+    else{
+        return res.status(200).json({
+            "success":false
+        })
+    }
+
+}

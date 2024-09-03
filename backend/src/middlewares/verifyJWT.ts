@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
+  console.log(req.cookies);
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'Unauthorized: No token provided' });
@@ -13,7 +14,7 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
-    req.user = decoded;  
+    req.user = decoded;
     next();
   } 
   catch (error) {

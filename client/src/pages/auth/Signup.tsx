@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
+
 const SignupForm: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -9,13 +11,14 @@ const SignupForm: React.FC = () => {
     phone: '',
   });
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    if(!document.cookie){
+    if (!document.cookie) {
       navigate('/');
     }
-  }, []);
+  }, [navigate]);
 
-  const navigate = useNavigate();
   const branches = ['Computer Engineering', 'Electronics and Computer', 'Mechanical Engineering', 'Civil Engineering'];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -27,16 +30,16 @@ const SignupForm: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if(!formData.name || !formData.rollno || !formData.branch || !formData.phone) {
+    if (!formData.name || !formData.rollno || !formData.branch || !formData.phone) {
       alert('Please fill all the fields');
       return;
     }
-    navigate('/signup/facecapture');
+    navigate('/signup/facecapture', { state: { formData } });
   };
 
   return (
     <div className="flex justify-center items-center h-screen">
-      <div className="  rounded-lg p-8 max-w-md w-full">
+      <div className="rounded-lg p-8 max-w-md w-full">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-3">Enter your details</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">

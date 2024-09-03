@@ -7,7 +7,7 @@ import {Strategy} from "passport-google-oauth2";
 import session from "express-session"
 import passport from "passport";
 import { PrismaClient } from '@prisma/client';
-
+import cookieParser from "cookie-parser"
 
 const prisma = new PrismaClient();
 dotenv.config();
@@ -19,6 +19,7 @@ app.use(cors({
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
 }));
+app.use(cookieParser());
 
 
 app.use(session({
