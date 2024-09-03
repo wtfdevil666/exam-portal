@@ -2,7 +2,10 @@ import mediapipe as mp
 import cv2
 from flask import Flask, jsonify, request
 import numpy as np
+from PIL import Image
 from flask_cors import CORS
+from facenet_pytorch import InceptionResnetV1,MTCNN
+from io import BytesIO
 
 app = Flask(__name__)
 CORS(app)
@@ -38,6 +41,49 @@ def detect_faces():
             return jsonify({'result': False, 'message': "Hand detected on face, please remove it."})
         else:
             return jsonify({'result': False, 'message': "Face not detected or obstructed!"})
+
+
+
+
+mtcnn = MTCNN(keep_all=False)
+model = InceptionResnetV1(pretrained="vggface2").eval()
+
+def extract_embeddings(image_data):
+    img = Image.open(BytesIO(image_data))
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+    img_np = np.array(img)
+
+    face = mtcnn(img_np)
+    if face is None:
+        return None
+    
+    embeddings = model(face.unsqueeze(0))
+    return embeddings.detach().numpy()
+
+@app.route('/match', methods=['POST'])
+def match_faces():
+    if 'image1' not in request.files or 'image2' not in request.files:
+        return jsonify({'result' : False, 'message': 'Images not received'})
+    
+    image1 = request.files['image1'].read()
+    image2 = request.files['image2'].read()
+
+    try:
+        embeddings1 = extract_embeddings(image1)
+        embeddings2 = extract_embeddings(image2)
+    except:
+        return jsonify({'result' : False, 'message': 'Images not received'})
+
+    if embeddings1 is None or embeddings2 is None:
+        return jsonify({'result' : False, 'message': 'No face detected'})
+    
+    distance = np.linalg.norm(embeddings1 - embeddings2)
+    threshold = 1.0 
+
+    match = bool(distance < threshold)
+    return jsonify({'result': match})
+
 
 if __name__ == '__main__':
     app.run()

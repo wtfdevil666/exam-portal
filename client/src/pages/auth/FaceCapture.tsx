@@ -5,19 +5,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { backend_url, model_url } from '../../config/config';
 
 
-axios.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
 const FaceCapture: React.FC = () => {
   const webcamRef = useRef<Webcam>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);

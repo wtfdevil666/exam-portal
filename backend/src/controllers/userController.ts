@@ -149,24 +149,29 @@ export const signup = async (req: Request, res: Response) => {
 
 export const Login = async (req:Request, res:Response) => {
 
-    //@ts-ignore
-    const email = req.user.email;
+    try {
+        //@ts-ignore
+        const email = req.user.email;
+        console.log(email);
 
-    const user = await prisma.user.findUnique({
-        where:{
-            email
+        const user = await prisma.user.findUnique({
+            where:{
+                email
+            }
+        })
+
+        if(user?.signUp===true){
+            return res.status(200).json({
+                "success":true
+            })
         }
-    })
-
-    if(user?.signUp===true){
-        return res.status(200).json({
-            "success":true
-        })
-    }
-    else{
-        return res.status(200).json({
-            "success":false
-        })
+        else{
+            return res.status(200).json({
+                "success":false
+            })
+        }
+    } catch (error) {
+        return res.status(500);
     }
 
 }

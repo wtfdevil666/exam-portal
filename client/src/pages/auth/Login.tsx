@@ -3,18 +3,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { backend_url } from '../../config/config';
 
-axios.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    }
-);
 
 const Login = () => {
     const navigate = useNavigate();
@@ -23,11 +11,11 @@ const Login = () => {
             try {
                 const response = await axios.get(backend_url+'/api/user/login/success', { withCredentials: true });
                 console.log(response.data.success);
-                if(response.data.success=== false){
-                    navigate('/signup');
+                if(response.data.success=== true){
+                    navigate('/user/dashboard');
                 }
                 else{
-                    navigate('/user/dashboard');
+                    navigate('/signup');
                 } 
             } catch (error) {
                 console.log(error)
