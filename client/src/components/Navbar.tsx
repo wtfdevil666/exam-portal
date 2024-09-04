@@ -1,9 +1,7 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
 
-    const navigate = useNavigate();
 
   return (
     <nav className="bg-white  shadow-lg p-4">
