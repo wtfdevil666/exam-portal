@@ -1,141 +1,136 @@
-
 import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
 
 const prisma = new PrismaClient();
 
+// Function to start the test
 export const startTest = async (req: Request, res: Response) => {
-    const { testId,email } = req.body;
+    const { testSlotId, email } = req.body;
 
     try {
-
-        const test = await prisma.test.findUnique({
-            where: {
-                id: testId,
-            }
+        const testSlot = await prisma.testSlot.findUnique({
+            where: { id: testSlotId },
+            include: { test: true }
         });
-        
+
         const currentTime = new Date();
 
-        if (!test) {
-            return res.status(400).json({ message: 'Test not found' });
+        if (!testSlot) {
+            return res.status(400).json({ message: 'Test slot not found' });
         }
 
-        const checkUser = await prisma.user.findUnique({
-            where: {
-                email,
-            }
+        const user = await prisma.user.findUnique({
+            where: { email }
         });
 
-        if (!checkUser) {
+        if (!user) {
             return res.status(400).json({ message: 'User not found' });
         }
 
-        if(!checkUser.testApplied){
-            return res.status(400).json({ message: 'User has not applied for any test' });
+        if (!user.testApplied || user.testSlotId !== testSlotId) {
+            return res.status(400).json({ message: 'User has not applied for this test slot' });
         }
 
-        if(checkUser.testId !== testId){
-            return res.status(400).json({ message: 'User has not applied for this test' });
-        }
-
-        if(checkUser.testGiven && currentTime > test.endTime){
+        if (user.testGiven) {
             return res.status(400).json({ message: 'User has already given the test' });
         }
-        
-        
-        if (currentTime > test.timeSlot && currentTime < test.endTime){
 
+        // Ensure the test starts within the allocated time slot
+        if (currentTime > testSlot.timeSlot && currentTime < testSlot.endTime) {
             await prisma.user.update({
-                where: {
-                    email,
-                },
-                data: {
-                    testGiven: true,
-                },
+                where: { email },
+                data: { testGiven: true }
             });
 
             return res.status(200).json({
                 message: 'Test started successfully',
-                test
+                test: testSlot.test,
+                timeSlot: testSlot.timeSlot,
+                endTime: testSlot.endTime
             });
-
         }
-        
-        return res.status(400).json({ message: 'Test has not started yet' });
 
+        return res.status(400).json({ message: 'Test has not started yet or has ended' });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: 'Error starting test' });
     }
-}
+};
 
+// Function to submit the test
 export const submitTest = async (req: Request, res: Response) => {
-    try {
-        
-        const { email, testId, mcqanswers, codes } = req.body;
+    const { email, testSlotId, mcqAnswers, codeSolutions } = req.body;
 
-        const test = await prisma.test.findUnique({
-            where:{
-                id:testId
-            },
+    try {
+        const testSlot = await prisma.testSlot.findUnique({
+            where: { id: testSlotId },
             include: {
                 mcqs: true,
                 codingQuestions: true
             }
-        })
+        });
 
         const user = await prisma.user.findUnique({
-            where:{
-                email
+            where: { email }
+        });
+
+        if (!testSlot) {
+            return res.status(400).json({ message: 'Test slot not found' });
+        }
+
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        if (user.testSlotId !== testSlotId) {
+            return res.status(400).json({ message: 'User has not applied for this test slot' });
+        }
+
+        if (!user.testGiven || user.testSubmitted) {
+            return res.status(400).json({ message: 'User has not given the test or has already submitted' });
+        }
+
+        // Evaluate the MCQ answers
+        let mcqMarks = 0;
+        for (let i = 0; i < testSlot.mcqs.length; i++) {
+            if (testSlot.mcqs[i].answer === mcqAnswers[i]) {
+                mcqMarks += testSlot.mcqs[i].marks;
             }
-        })
-
-        if(!test){
-            return res.status(400).json({
-                error:"Test not found"
-            })
-        }
-        
-        if(!user){
-            return res.status(400).json({
-                error:"User not found"
-            })
         }
 
-        if(user.testId !== testId){
-            return res.status(400).json({
-                error:"User has not applied for this test"
-            })
-        }
+        // Evaluate the coding questions (assuming codeSolutions is an array of solutions)
+        // You need to implement your own logic for evaluating coding questions.
+        // Let's assume `evaluateCodeSolution` is a function that returns marks for coding questions
+        // let codeMarks = 0;
+        // for (let i = 0; i < testSlot.codingQuestions.length; i++) {
+        //     codeMarks += await evaluateCodeSolution(testSlot.codingQuestions[i], codeSolutions[i]);
+        // }
 
-        if(user.testGiven && !user.testSubmitted){
-            
-            let marks = 0;
-            for (let i = 0; i < test.mcqs.length; i++) {
-                if (test.mcqs[i].answer === mcqanswers[i]) {
-                    marks += test.mcqs[i].marks;
-                }
+        // Calculate total marks
+        const totalMarks = mcqMarks;
+
+        // Update user status and marks
+        await prisma.user.update({
+            where: { email },
+            data: {
+                testSubmitted: true,
+                marks: totalMarks
             }
-            
-            
+        });
 
-
-
-            await prisma.user.update({
-                where: {
-                    email,
-                },
-                data: {
-                    testSubmitted: true,
-                },
-            });
-
-            return res.status(200).json({ message: 'Test submitted successfully' });
-        }else{
-            return res.status(400).json({ message: 'User has not given the test yet' });
-        }
-    
+        return res.status(200).json({ 
+            message: 'Test submitted successfully',
+            totalMarks 
+        });
     } catch (error) {
-        
+        console.error(error);
+        res.status(500).json({ message: 'Error submitting test' });
     }
-}
+};
+
+// Dummy function for evaluating coding questions
+// async function evaluateCodeSolution(codingQuestion, codeSolution) {
+//     // Custom logic to evaluate code solutions
+//     // For now, let's return a random score as a placeholder
+//     return Math.floor(Math.random() * codingQuestion.maxMarks);
+// }
