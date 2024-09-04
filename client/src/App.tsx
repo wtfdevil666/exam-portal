@@ -8,6 +8,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import Addmcqs from './pages/admin/Addmcqs';
 import Addcodingquestions from './pages/admin/Addcodingquestions';
 import FaceCapture from './pages/auth/FaceCapture';
+import Test from './pages/test/Test';
 
 
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/admin/test/:testid/addmcqs" element={<Addmcqs/>} />
           <Route path="/admin/test/:testid/addcodingquestions" element={<Addcodingquestions/>} />
           <Route path="/signup/facecapture" element={<FaceCapture/>} />
+          <Route path='/test' element={<Test />} />
         </Routes>  
       </BrowserRouter>
     </div>
