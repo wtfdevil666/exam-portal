@@ -1,9 +1,22 @@
 import MCQComponent from "../../components/test/Mcq";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Timer from "../../components/test/Timer";
 import HoverComponent from "../../components/test/Hoverlist";
 
 const Test: React.FC = () => {
+
+    const [type, setType] = useState(true);
+
+    useEffect(() => {
+        
+        const fetchTest = async () => {
+            
+        }
+
+        fetchTest();
+        
+    }, []);
+
     const data = {
         questions: {
             1: {
@@ -57,15 +70,21 @@ const Test: React.FC = () => {
             },
         },
     };
+
+
     const [currentIndex, setCurrentIndex] = useState(0);
     return (
         <div className="grid grid-cols-6 h-screen">
             <div className="bg-neutral-200 w-full pt-24">
                 <div className="flex flex-col items-center space-y-8">
-                    <button className="bg-neutral-300 rounded-xl h-10 px-8">
+                    <button className="bg-neutral-300 rounded-xl h-10 px-8" onClick={
+                        () => setType(true)
+                    }>
                         MCQ
                     </button>
-                    <button className="bg-neutral-300 rounded-xl h-10 px-8">
+                    <button className="bg-neutral-300 rounded-xl h-10 px-8" onClick={
+                        () => setType(false)
+                    }>
                         Coding
                     </button>
                 </div>
@@ -87,13 +106,18 @@ const Test: React.FC = () => {
                         <Timer />
                     </div>
                 </div>
+                {type ? (
                 <div className="p-4">
                     <MCQComponent
                         data={data}
                         currentIndex={currentIndex}
                         setCurrentIndex={setCurrentIndex}
                     />
-                </div>
+                </div>):(
+                    <div className="p-4">
+                        <div>coding</div>
+                    </div>
+                )}
             </div>
         </div>
     );

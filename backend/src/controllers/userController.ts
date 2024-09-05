@@ -89,7 +89,7 @@ export const applyTest = async (req: Request, res: Response) => {
 
 // Signup with profile image upload
 export const signup = async (req: Request, res: Response) => {
-    const { name, rollNo, branch, phone } = req.body.formData;
+    const { name, rollNo, branch, phone,year } = req.body.formData;
     //@ts-ignore
     const email = req.user.email;
 
@@ -123,8 +123,8 @@ export const signup = async (req: Request, res: Response) => {
 
         const user = await prisma.user.upsert({
             where: { email },
-            update: { name, rollNo, branch, phone, signUp: true, imageurl: imageUrl },
-            create: { email, name, rollNo, branch, phone, signUp: true, imageurl: imageUrl },
+            update: { name, rollNo, branch, phone, signUp: true,year, imageurl: imageUrl },
+            create: { email, name, rollNo, branch, phone, signUp: true,year, imageurl: imageUrl },
         });
 
         res.json({ message: 'User created or updated successfully', user });

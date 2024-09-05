@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post("/getotp", adminLogin);
 router.get("/islogined", verifyJWT, isAdminLogined);
-router.get("/tests", verifyJWT, getTests);
+router.get("/tests",verifyJWT, getTests);
 router.post("/createTest", verifyJWT, createTest);
 router.delete("/deleteTest/:id", verifyJWT, deleteTest);
 router.put("/updateTest/:id", verifyJWT, updateTest);
