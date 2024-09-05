@@ -35,7 +35,7 @@ const MCQComponent: React.FC<MCQComponentProps> = ({
     }, []);
 
     useEffect(() => {
-        localStorage.setItem("userAnswers", JSON.stringify(userAnswers));
+        localStorage.setItem("mcqAnswers", JSON.stringify(userAnswers));
     }, [userAnswers]);
 
     const handleNext = () => {
