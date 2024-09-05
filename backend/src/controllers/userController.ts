@@ -3,13 +3,108 @@ import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
 import { initializeApp } from "firebase/app";
 import { getStorage, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import multer from 'multer';
 
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
-const upload = multer({ storage: multer.memoryStorage() });
 const prisma = new PrismaClient();
-export const uploadMiddleware = upload.single('profileImage');
+
+
+export const signup = async (req: Request, res: Response) => {
+    console.log(req.body);
+    const { name, rollNo, branch, phone, year } = req.body;
+  
+    // @ts-ignore
+    const email = req.user?.email;
+    console.log(req.user);
+    if (!email) {
+      return res.status(400).json({ message: 'User email is required' });
+    }
+  
+    // Validate the required fields
+    if (!name || !rollNo || !branch || !phone || !year) {
+      return res.status(400).json({ message: 'All fields are required.' });
+    }
+  
+    try {
+      let imageUrl: string | null = null;
+  
+      // Handle image upload if an image is provided
+      if (req.file) {
+        try {
+          const file = req.file;
+          const storageRef = ref(storage, `profileImages/${Date.now()}_${file.originalname}`); // Generate unique file name
+  
+          // Upload the file to Firebase Storage
+          const uploadTask = uploadBytesResumable(storageRef, file.buffer);
+  
+          // Wait for the upload to complete and retrieve the download URL
+          imageUrl = await new Promise<string | null>((resolve, reject) => {
+            uploadTask.on(
+              'state_changed',
+              null, // Progress handler (optional)
+              (error) => {
+                console.error('Image upload failed:', error);
+                reject(null); // Return null on error
+              },
+              async () => {
+                try {
+                  const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+                  resolve(downloadUrl); // Resolve with download URL
+                } catch (error) {
+                  console.error('Error getting download URL:', error);
+                  reject(null); // Return null on error
+                }
+              }
+            );
+          });
+        } catch (error) {
+          console.error('Error during image upload process:', error);
+          return res.status(500).json({ message: 'Image upload failed' });
+        }
+      }
+  
+      // Upsert user data in the database
+      const user = await prisma.user.upsert({
+        where: { email },
+        update: {
+          name,
+          rollNo,
+          branch,
+          phone,
+          year,
+          signUp: true,
+          imageurl:imageUrl, // Store imageUrl
+        },
+        create: {
+          email,
+          name,
+          rollNo,
+          branch,
+          phone,
+          year,
+          signUp: true,
+          imageurl:imageUrl, // Store imageUrl
+        },
+      });
+  
+      // Success response
+      console.log('User created or updated successfully:', user);
+      res.status(200).json({ message: 'User created or updated successfully', user });
+    } catch (error) {
+      console.error('Error in user signup:', error);
+      res.status(500).json({ message: 'Error creating or updating user' });
+    }
+  };
+  
+
+
+
+
+
+
+
+
+
 
 // Fetch all tests
 export const getTests = async (req: Request, res: Response) => {
@@ -87,51 +182,7 @@ export const applyTest = async (req: Request, res: Response) => {
     }
 };
 
-// Signup with profile image upload
-export const signup = async (req: Request, res: Response) => {
-    const { name, rollNo, branch, phone,year } = req.body.formData;
-    //@ts-ignore
-    const email = req.user.email;
 
-    if (!email) {
-        return res.status(400).json({ message: 'User email is required' });
-    }
-
-    try {
-        let imageUrl: string | null = null;
-
-        if (req.file) {
-            const file = req.file;
-            const storageRef = ref(storage, `profileImages/${file.originalname}`);
-            const uploadTask = uploadBytesResumable(storageRef, file.buffer);
-
-            await new Promise<void>((resolve, reject) => {
-                uploadTask.on('state_changed', 
-                    () => {}, 
-                    (error) => reject(error), 
-                    async () => {
-                        try {
-                            imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
-                            resolve();
-                        } catch (error) {
-                            reject(error);
-                        }
-                    }
-                );
-            });
-        }
-
-        const user = await prisma.user.upsert({
-            where: { email },
-            update: { name, rollNo, branch, phone, signUp: true,year, imageurl: imageUrl },
-            create: { email, name, rollNo, branch, phone, signUp: true,year, imageurl: imageUrl },
-        });
-
-        res.json({ message: 'User created or updated successfully', user });
-    } catch (error) {
-        res.status(500).json({ message: 'Error creating or updating user' });
-    }
-};
 
 // Login check
 export const login = async (req: Request, res: Response) => {

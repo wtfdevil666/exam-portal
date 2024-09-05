@@ -244,3 +244,80 @@ export const updateCodingQuestion = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Internal server error', error });
   }
 };
+
+export const getTestSlots = async (req: Request, res: Response) => {
+  try {
+    const testSlots = await prisma.testSlot.findMany({
+      where: {
+        testId: req.params.testId
+      }
+    });
+
+    res.status(200).json({ testSlots });
+  } catch (error) {
+    console.error('Error getting test slots:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+}
+
+export const createTestSlot = async (req: Request, res: Response) => {
+  try {
+    const {testId} = req.params;
+    const {  timeSlot, endTime, usersAllowed, totalMarks } = req.body;
+
+    const testSlot = await prisma.testSlot.create({
+      data: {
+        testId,
+        timeSlot,
+        endTime,
+        totalMarks,
+        usersAllowed,
+
+      }
+    });
+
+    res.status(201).json({ message: 'Test slot created successfully', testSlot });
+  } catch (error) {
+    console.error('Error creating test slot:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+}
+
+export const deleteTestSlot = async (req: Request, res: Response) => {
+  try {
+    const testSlotId = req.params.testSlotId;
+    const testSlot = await prisma.testSlot.delete({
+      where: {
+        id: testSlotId
+      }
+    });
+    res.status(200).json({ message: 'Test slot deleted successfully', testSlot });
+  } catch (error) {
+    console.error('Error deleting test slot:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+}
+
+export const updateTestSlot = async (req: Request, res: Response) => {  
+  try {
+    const testSlotId = req.params.testSlotId;
+    const { timeSlot, endTime, usersAllowed, totalMarks } = req.body;
+
+    const testSlot = await prisma.testSlot.update({
+      where: {
+        id: testSlotId
+      },
+      data: {
+        timeSlot,
+        endTime,
+        usersAllowed,
+        totalMarks
+      }
+    });
+
+    res.status(200).json({ message: 'Test slot updated successfully', testSlot });
+  } catch (error) {
+    console.error('Error updating test slot:', error);
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+}

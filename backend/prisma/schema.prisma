@@ -77,9 +77,9 @@ model TestSlot {
   id               String   @id @default(cuid())
   timeSlot         DateTime
   endTime          DateTime
-  testId           String
   usersAllowed     Int 
   totalMarks       Int
+  testId           String
   test             Test     @relation(fields: [testId], references: [id])
   usersFilled      Int @default(0)
   noOfMcqs         Int @default(0)

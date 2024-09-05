@@ -73,9 +73,9 @@ const FaceCapture: React.FC = () => {
   };
 
   const submitImage = async () => {
-    if (!capturedImage || !isVerified) return; 
+    if (!capturedImage || !isVerified) return;
   
-    setIsDetecting(true); 
+    setIsDetecting(true);
   
     try {
       const byteString = atob(capturedImage.split(',')[1]);
@@ -86,30 +86,38 @@ const FaceCapture: React.FC = () => {
         ia[i] = byteString.charCodeAt(i);
       }
       const blob = new Blob([ab], { type: mimeString });
-
-      const image = new FormData();
-      image.append('image', blob, 'captured_face.jpg');
-
-      const res = await axios.post(backend_url+"/api/user/signup", {
-        image,
-        formData
-      }, {withCredentials:true})
-      
-      if(res.status===200){
-        navigate("/user/dashboard");
+  
+      const formDataToSend = new FormData();
+      formDataToSend.append('image', blob, 'captured_face.jpg');
+  
+      // Append the formData fields if needed by backend
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('rollNo', formData.rollNo);
+      formDataToSend.append('branch', formData.branch);
+      formDataToSend.append('phone', formData.phone);
+      formDataToSend.append('year', formData.year);
+      formDataToSend.append('image','captured_face.jpg');
+  
+      const res = await axios.post(`${backend_url}/api/user/signup`, formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        withCredentials: true,
+      });
+  
+      if (res.status === 200) {
+        navigate('/user/dashboard');
+      } else {
+        navigate('/signup');
       }
-      else{
-        navigate("/signup");
-      }
-
-      
     } catch (error) {
       console.error('Submission failed:', error);
     }
   
     setIsDetecting(false);
-    setShowModal(false); 
+    setShowModal(false);
   };
+  
 
   return (
     <div className="flex justify-center items-center h-screen ">

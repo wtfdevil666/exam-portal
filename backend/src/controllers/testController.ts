@@ -5,7 +5,10 @@ const prisma = new PrismaClient();
 
 // Function to start the test
 export const startTest = async (req: Request, res: Response) => {
-    const { testSlotId, email } = req.body;
+
+    const { testSlotId } = req.params;
+    //@ts-ignore
+    const {email} = req.user.email;
 
     try {
         const testSlot = await prisma.testSlot.findUnique({
